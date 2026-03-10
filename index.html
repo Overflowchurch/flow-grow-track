@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow & Grow Track — Overflow Church</title>
+<style>
+:root{--gold:#CFA933;--teal:#3BA3BF;--black:#0d0d0d;--cream:#f5f0e5;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Georgia,serif;background:var(--black);color:#222;}
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--black);}
+.login-box{width:100%;max-width:420px;}
+.ofc-circle{width:90px;height:90px;border-radius:50%;border:2px solid rgba(207,169,51,0.4);background:radial-gradient(circle,rgba(207,169,51,0.2),rgba(207,169,51,0.05));display:inline-flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:var(--gold);margin-bottom:16px;}
+.login-title{color:var(--gold);font-size:26px;font-weight:bold;margin-bottom:4px;}
+.login-sub{color:#aaa;font-size:13px;font-style:italic;margin-bottom:32px;}
+.card{background:#1a1a1a;border-radius:12px;padding:32px 28px;border:1px solid rgba(207,169,51,0.25);}
+.card h2{color:#fff;font-size:17px;text-align:center;margin-bottom:6px;}
+.card p{color:#888;font-size:13px;text-align:center;margin-bottom:24px;line-height:1.6;}
+label{display:block;color:#bbb;font-size:11px;font-family:Arial,sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+input[type=text],input[type=password]{width:100%;padding:12px 14px;border-radius:8px;border:1px solid rgba(207,169,51,0.25);background:#222;color:#fff;font-size:14px;outline:none;margin-bottom:16px;}
+input:focus{border-color:var(--gold);}
+.btn-login{width:100%;padding:14px;border-radius:8px;background:var(--gold);border:none;cursor:pointer;color:var(--black);font-weight:bold;font-size:15px;font-family:Arial,sans-serif;}
+.err{background:#3a1010;border:1px solid #cc0055;border-radius:8px;padding:10px 14px;margin-bottom:16px;color:#f88;font-size:13px;display:none;}
+.login-footer{text-align:center;margin-top:20px;color:#444;font-size:11px;}
+.login-footer span{color:var(--gold);}
+#app{display:none;min-height:100vh;background:var(--cream);}
+.header{background:var(--black);padding:18px 24px;border-bottom:2px solid var(--gold);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.header-title{color:var(--gold);font-weight:bold;font-size:20px;}
+.header-sub{color:var(--teal);font-size:12px;font-family:Arial,sans-serif;}
+.btn-signout{background:transparent;border:1px solid #444;color:#888;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;}
+.nav{background:#111;border-bottom:1px solid #333;overflow-x:auto;white-space:nowrap;}
+.nav button{padding:12px 14px;background:transparent;border:none;border-bottom:3px solid transparent;color:#999;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;white-space:nowrap;}
+.nav button.active{color:var(--gold);border-bottom-color:var(--gold);}
+.nav button.done{color:#4caf50;}
+.nav button.done::after{content:" ✓";}
+.content{max-width:880px;margin:0 auto;padding:32px 20px 60px;}
+.tab{display:none;} .tab.active{display:block;}
+.step-banner{padding:28px 24px;border-radius:8px;margin-bottom:28px;}
+.step-banner.gold{background:var(--black);border-bottom:4px solid var(--gold);}
+.step-banner.teal{background:var(--teal);}
+.step-label{font-family:Arial,sans-serif;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:6px;}
+.step-banner.gold .step-label{color:var(--teal);}
+.step-banner.teal .step-label{color:rgba(255,255,255,0.7);}
+.step-word{font-family:Georgia,serif;font-size:32px;font-weight:bold;}
+.step-banner.gold .step-word{color:var(--gold);}
+.step-banner.teal .step-word{color:#fff;}
+.step-tagline{font-style:italic;font-size:15px;}
+.step-banner.gold .step-tagline{color:#ccc;}
+.step-banner.teal .step-tagline{color:rgba(255,255,255,0.85);}
+.st{font-family:Arial,sans-serif;font-weight:bold;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;border-left:4px solid var(--gold);padding-left:10px;margin:24px 0 12px;color:var(--black);}
+.st.teal{border-left-color:var(--teal);}
+.item{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.item-n{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;color:var(--black);font-family:Arial,sans-serif;margin-top:2px;}
+.item-n.teal{background:var(--teal);color:#fff;}
+.item-text{font-size:14px;line-height:1.7;color:#333;}
+.verse{border-left:4px solid var(--gold);background:#fdf3c8;padding:14px 18px;margin:16px 0;border-radius:0 8px 8px 0;}
+.verse.teal{border-left-color:var(--teal);background:#d4eef5;}
+.verse-text{font-style:italic;font-size:15px;line-height:1.7;color:#4a3a00;}
+.verse.teal .verse-text{color:#0a3540;}
+.verse-ref{font-weight:bold;font-size:12px;margin-top:6px;color:#7a6200;font-family:Arial,sans-serif;}
+.verse.teal .verse-ref{color:#1a6070;}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0;}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:12px 0;}
+.grid4{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+.grid-teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.dark-card{background:var(--black);padding:16px;border-radius:8px;}
+.dark-card-title{color:var(--gold);font-weight:bold;font-family:Arial,sans-serif;font-size:14px;margin-bottom:6px;}
+.dark-card-body{color:#ccc;font-size:12px;line-height:1.6;}
+.gov-card{background:#fff;border-top:4px solid var(--gold);padding:14px;border-radius:0 0 8px 8px;box-shadow:0 2px 6px rgba(0,0,0,0.07);}
+.gov-role{color:var(--teal);font-family:Arial,sans-serif;font-size:11px;font-weight:bold;text-transform:uppercase;margin-bottom:4px;}
+.gov-title{font-weight:bold;font-size:13px;margin-bottom:4px;}
+.gov-desc{font-size:12px;color:#666;}
+.covenant-box{background:var(--black);padding:24px;border-radius:8px;border:1px solid var(--gold);}
+.covenant-item{margin-bottom:16px;}
+.covenant-head{color:var(--teal);font-weight:bold;font-size:13px;margin-bottom:4px;}
+.covenant-body{color:#bbb;font-size:13px;padding-left:16px;}
+.gift-card{background:#fff;border-left:3px solid var(--teal);border-radius:0 6px 6px 0;padding:10px 12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.gift-letter{color:var(--teal);font-weight:bold;font-size:11px;font-family:Arial,sans-serif;margin-bottom:2px;}
+.gift-name{font-weight:bold;font-size:13px;margin-bottom:3px;}
+.gift-desc{font-size:11px;color:#666;line-height:1.5;}
+.quality-card{background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.07);border-left:4px solid var(--gold);}
+.quality-card.teal{border-left-color:var(--teal);}
+.quality-inner{display:flex;gap:12px;align-items:flex-start;}
+.quality-num{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;color:var(--black);font-family:Arial,sans-serif;}
+.quality-card.teal .quality-num{background:var(--teal);color:#fff;}
+.quality-h{font-weight:bold;font-size:14px;margin-bottom:4px;}
+.quality-d{font-size:13px;color:#555;}
+.declaration{background:var(--black);color:#ddd;padding:24px;border-radius:8px;border:1px solid var(--gold);font-style:italic;font-size:14px;line-height:1.9;}
+.team-card{background:#fff;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.team-name{font-weight:bold;font-size:13px;margin-bottom:4px;}
+.team-desc{font-size:11px;color:#666;line-height:1.5;}
+.team-req{font-size:10px;color:var(--teal);font-style:italic;margin-top:4px;}
+.congrats{background:var(--teal);color:#fff;padding:24px;border-radius:8px;margin-top:28px;}
+.congrats-title{font-family:Arial,sans-serif;font-weight:bold;font-size:16px;margin-bottom:12px;text-transform:uppercase;}
+.faith-item{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #e5e0d5;}
+.faith-title{font-weight:bold;font-size:14px;margin-bottom:6px;color:var(--black);}
+.faith-text{font-size:13px;color:#444;line-height:1.7;margin-bottom:4px;}
+.faith-ref{font-size:11px;color:var(--teal);font-style:italic;}
+.welcome-banner{background:var(--black);color:#fff;padding:36px 32px;border-radius:8px;margin-bottom:28px;border:1px solid rgba(207,169,51,0.2);}
+.welcome-label{color:var(--teal);font-family:Arial,sans-serif;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;}
+.welcome-title{color:var(--gold);font-family:Georgia,serif;font-size:30px;font-weight:bold;margin-bottom:8px;}
+.welcome-tagline{color:#ccc;font-style:italic;font-size:15px;margin-bottom:16px;}
+.welcome-verse{color:#aaa;font-size:13px;border-top:1px solid rgba(207,169,51,0.2);padding-top:14px;}
+.step-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px;}
+.step-card{border:none;border-radius:8px;padding:24px 16px;cursor:pointer;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.15);position:relative;}
+.step-card:hover{transform:translateY(-2px);}
+.check-badge{position:absolute;top:10px;right:10px;background:#4caf50;color:#fff;border-radius:50%;width:22px;height:22px;font-size:12px;display:none;align-items:center;justify-content:center;font-family:Arial,sans-serif;}
+.check-badge.show{display:flex;}
+.goal-card{background:#fff;border-top:4px solid var(--teal);padding:16px;border-radius:0 0 8px 8px;box-shadow:0 2px 6px rgba(0,0,0,0.07);}
+.goal-title{font-weight:bold;font-size:13px;margin-bottom:6px;}
+.goal-desc{font-size:12px;color:#666;line-height:1.5;}
+.nav-arrows{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid #ddd;}
+.btn-prev{background:#fff;border:1px solid var(--gold);color:var(--gold);padding:10px 20px;border-radius:8px;cursor:pointer;font-family:Arial,sans-serif;font-weight:bold;font-size:13px;}
+.btn-next{background:var(--gold);border:none;color:var(--black);padding:10px 20px;border-radius:8px;cursor:pointer;font-family:Arial,sans-serif;font-weight:bold;font-size:13px;}
+.complete-box{background:#e8f5e9;border:1px solid #4caf50;border-radius:8px;padding:16px 20px;margin-top:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;}
+.complete-box p{font-size:14px;color:#2e7d32;font-family:Arial,sans-serif;margin:0;}
+.btn-complete{background:#4caf50;border:none;color:#fff;padding:12px 24px;border-radius:8px;cursor:pointer;font-family:Arial,sans-serif;font-weight:bold;font-size:14px;}
+.btn-complete.done{background:#888;cursor:default;}
+footer{background:var(--black);border-top:2px solid var(--gold);padding:20px;text-align:center;}
+footer .f1{color:var(--gold);font-weight:bold;font-family:Arial,sans-serif;font-size:13px;}
+footer .f2{color:#555;font-size:11px;margin-top:4px;}
+p{font-size:14px;line-height:1.8;color:#333;margin-bottom:10px;}
+
+/* ASSESSMENTS */
+.assessment-box{background:#fff;border-radius:10px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,0.08);margin:20px 0;}
+.assessment-box h3{font-family:Arial,sans-serif;font-size:15px;font-weight:bold;color:var(--black);margin-bottom:8px;}
+.a-intro{font-size:13px;color:#555;margin-bottom:20px;line-height:1.6;}
+.q-block{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid #f0f0f0;}
+.q-text{font-size:13px;color:#333;margin-bottom:10px;line-height:1.5;}
+.q-scale{display:flex;gap:8px;flex-wrap:wrap;}
+.q-opt{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;font-family:Arial,sans-serif;cursor:pointer;padding:6px 12px;border:1px solid #ddd;border-radius:6px;}
+.q-opt:hover{border-color:var(--teal);background:#f0fafd;}
+.q-opt input{accent-color:var(--teal);}
+.btn-submit{background:var(--teal);border:none;color:#fff;padding:12px 28px;border-radius:8px;cursor:pointer;font-family:Arial,sans-serif;font-weight:bold;font-size:14px;margin-top:12px;}
+.btn-retake{background:transparent;border:1px solid var(--teal);color:var(--teal);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:Arial,sans-serif;font-size:13px;margin-top:10px;display:none;}
+.results-panel{background:var(--black);border-radius:10px;padding:24px;margin-top:16px;display:none;}
+.results-panel h3{color:var(--gold);font-family:Arial,sans-serif;font-size:16px;margin-bottom:16px;}
+.r-item{border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px;}
+.r-rank{font-size:11px;font-family:Arial,sans-serif;font-weight:bold;text-transform:uppercase;margin-bottom:4px;}
+.r-name{color:#fff;font-weight:bold;font-size:15px;margin-bottom:4px;}
+.r-desc{color:#aaa;font-size:12px;line-height:1.5;}
+.r-score{font-size:12px;color:#666;margin-top:4px;font-family:Arial,sans-serif;}
+.bar-wrap{background:#333;border-radius:4px;height:8px;margin-top:6px;}
+.bar-fill{height:8px;border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-box">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div class="ofc-circle">OFC</div>
+      <div class="login-title">Flow & Grow Track</div>
+      <div class="login-sub">Overflow Church · Houston, Texas</div>
+    </div>
+    <div class="card">
+      <h2>Member Access</h2>
+      <p>Enter your name and the access code provided by your pastor or church staff.</p>
+      <label>Your Name</label>
+      <input type="text" id="iname" placeholder="First & Last Name"/>
+      <label>Access Code</label>
+      <input type="password" id="icode" placeholder="Enter access code" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div class="err" id="errmsg"></div>
+      <button class="btn-login" onclick="doLogin()">Enter the Course →</button>
+      <div style="text-align:center;margin-top:16px;color:#555;font-size:12px;">Need the access code? Contact your pastor or church staff.</div>
+    </div>
+    <div class="login-footer">"Ready · Set · Serve · Go" — <span>Overflow Church</span></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="header">
+    <div>
+      <div class="header-title">Flow & Grow Track</div>
+      <div class="header-sub" id="wname">Overflow Church</div>
+    </div>
+    <button class="btn-signout" onclick="doLogout()">Sign Out</button>
+  </div>
+  <div class="nav">
+    <button class="active" onclick="goTab(0,this)">Overview</button>
+    <button id="nb1" onclick="goTab(1,this)">Step 1: Ready</button>
+    <button id="nb2" onclick="goTab(2,this)">Step 2: Set</button>
+    <button id="nb3" onclick="goTab(3,this)">Step 3: Serve</button>
+    <button id="nb4" onclick="goTab(4,this)">Step 4: Go</button>
+    <button onclick="goTab(5,this)">Statement of Faith</button>
+  </div>
+  <div class="content">
+
+    <!-- TAB 0: OVERVIEW -->
+    <div class="tab active" id="tab0">
+      <div class="welcome-banner">
+        <div class="welcome-label">Welcome to the</div>
+        <div class="welcome-title">Flow & Grow Track</div>
+        <div class="welcome-tagline">A four-step journey into faith, community, and purpose</div>
+        <div class="welcome-verse">"I have come that they may have life, and have it to the full." — <strong style="color:var(--gold)">John 10:10</strong></div>
+      </div>
+      <p>The Overflow Church Flow & Grow Track guides you to discover your redemptive purpose and live the life God created for you.</p>
+      <div class="step-grid">
+        <button class="step-card" style="background:#CFA933" onclick="goTabN(1)"><div class="check-badge" id="b1">✓</div><div style="font-size:11px;font-family:Arial;font-weight:bold;text-transform:uppercase;color:#555;margin-bottom:6px">Step 1</div><div style="font-size:26px;font-weight:bold;font-family:Georgia;color:#0d0d0d;margin-bottom:6px">READY</div><div style="font-size:12px;color:#444">Become a Member</div><div style="font-size:10px;color:#666;margin-top:8px;font-style:italic">1st Sunday of Every Month</div></button>
+        <button class="step-card" style="background:#3BA3BF" onclick="goTabN(2)"><div class="check-badge" id="b2">✓</div><div style="font-size:11px;font-family:Arial;font-weight:bold;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:6px">Step 2</div><div style="font-size:26px;font-weight:bold;font-family:Georgia;color:#fff;margin-bottom:6px">SET</div><div style="font-size:12px;color:rgba(255,255,255,0.9)">Discover Your Design</div><div style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:8px;font-style:italic">2nd Sunday of Every Month</div></button>
+        <button class="step-card" style="background:#CFA933" onclick="goTabN(3)"><div class="check-badge" id="b3">✓</div><div style="font-size:11px;font-family:Arial;font-weight:bold;text-transform:uppercase;color:#555;margin-bottom:6px">Step 3</div><div style="font-size:26px;font-weight:bold;font-family:Georgia;color:#0d0d0d;margin-bottom:6px">SERVE</div><div style="font-size:12px;color:#444">Develop Your Leadership</div><div style="font-size:10px;color:#666;margin-top:8px;font-style:italic">3rd Sunday of Every Month</div></button>
+        <button class="step-card" style="background:#3BA3BF" onclick="goTabN(4)"><div class="check-badge" id="b4">✓</div><div style="font-size:11px;font-family:Arial;font-weight:bold;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:6px">Step 4</div><div style="font-size:26px;font-weight:bold;font-family:Georgia;color:#fff;margin-bottom:6px">GO</div><div style="font-size:12px;color:rgba(255,255,255,0.9)">Join the Team</div><div style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:8px;font-style:italic">4th Sunday of Every Month</div></button>
+      </div>
+      <div class="grid2">
+        <div class="goal-card"><div class="goal-title">Know God</div><div class="goal-desc">Develop a genuine personal relationship with Jesus Christ</div></div>
+        <div class="goal-card"><div class="goal-title">Find Freedom</div><div class="goal-desc">Connect in Small Groups and experience life-change in community</div></div>
+        <div class="goal-card"><div class="goal-title">Discover Purpose</div><div class="goal-desc">Learn how your unique design reveals God's plan for your life</div></div>
+        <div class="goal-card"><div class="goal-title">Make a Difference</div><div class="goal-desc">Use your gifts to serve others through the Dream Team</div></div>
+      </div>
+      <div class="nav-arrows"><div></div><button class="btn-next" onclick="goTabN(1)">Next →</button></div>
+    </div>
+
+    <!-- TAB 1: READY -->
+    <div class="tab" id="tab1">
+      <div class="step-banner gold"><div class="step-label">Step One · 1st Sunday of Every Month</div><div class="step-word">READY</div><div class="step-tagline">Become a Member</div></div>
+      <div class="st">The Overflow Story</div>
+      <p>Pastor Eddy Nubine, alongside his wife Patricia and their three children, was inspired to plant a church with a simple goal — to help people connect with God so that they might reach their full potential. Overflow Church began officially on <strong>January 28, 2018</strong> at McFee Elementary School in Katy, Texas. From the beginning, the church has focused on reaching those who do not know God personally and building relationships through Small Groups.</p>
+      <div class="st teal">1. Know God</div>
+      <p>Our Sunday services are built on four values:</p>
+      <div class="item"><div class="item-n">1</div><div class="item-text"><strong>Enjoyable</strong> — "I was glad when they said to me, 'Let us go into the house of the Lord.'" (Psalm 122:1)</div></div>
+      <div class="item"><div class="item-n">2</div><div class="item-text"><strong>God's Presence</strong> — A place where people experience and encounter the living God</div></div>
+      <div class="item"><div class="item-n">3</div><div class="item-text"><strong>Bible-Applied</strong> — A place where people learn how the Bible applies to their daily lives</div></div>
+      <div class="item"><div class="item-n">4</div><div class="item-text"><strong>Salvation</strong> — A place where people can accept Jesus as their Lord and Savior</div></div>
+      <div class="st">How We Reach the World</div>
+      <div class="item"><div class="item-n teal">1</div><div class="item-text"><strong>"In Jerusalem" — Our City</strong> — Sunday services, Dream Centers, Homeless Ministry, and Outreach Small Groups</div></div>
+      <div class="item"><div class="item-n teal">2</div><div class="item-text"><strong>"In Judea & Samaria" — Our Nation</strong> — Prayer, ITO Community Development, Church Planting & Leadership Training</div></div>
+      <div class="item"><div class="item-n teal">3</div><div class="item-text"><strong>"To the Ends of the Earth" — Our World</strong> — Strategic Missions focused on unreached people groups, children, and church planting</div></div>
+      <div class="st teal">2. Find Freedom — Small Groups</div>
+      <div class="verse"><div class="verse-text">"Day after day, in the temple courts and from house to house, they never stopped teaching and proclaiming the good news that Jesus is the Messiah."</div><div class="verse-ref">— ACTS 5:42</div></div>
+      <div style="text-align:center;font-style:italic;font-weight:bold;font-size:15px;margin:12px 0;color:var(--black)">"Overflow Church is a church OF Small Groups — not a church WITH Small Groups."</div>
+      <div class="grid2">
+        <div class="dark-card"><div class="dark-card-title">CONNECT</div><div class="dark-card-body">We were not made to do life alone. God created us for community.</div></div>
+        <div class="dark-card"><div class="dark-card-title">PROTECT</div><div class="dark-card-body">Our problems become smaller as God uses others for support.</div></div>
+        <div class="dark-card"><div class="dark-card-title">GROW</div><div class="dark-card-body">As iron sharpens iron, so one person sharpens another. (Proverbs 27:17)</div></div>
+      </div>
+      <p><strong>Small Group Hubs:</strong> Men · Women · Marriage & Family · Students · Freedom · Prayer · Outreach · Financial</p>
+      <p><strong>3 Semesters:</strong> Winter/Spring (13 wks) · Summer (6 wks) · Fall (13 wks)</p>
+      <div class="st">3. Discover Purpose</div>
+      <div class="verse"><div class="verse-text">"I have come that they may have life, and have it to the full."</div><div class="verse-ref">— JOHN 10:10</div></div>
+      <div class="st">4. Make a Difference — Dream Team</div>
+      <div class="verse teal"><div class="verse-text">"For we are God's handiwork, created in Christ Jesus to do good works, which God prepared in advance for us to do."</div><div class="verse-ref">— EPHESIANS 2:10</div></div>
+      <div class="st teal">Church Government</div>
+      <div class="grid3">
+        <div class="gov-card"><div class="gov-role">Guided By</div><div class="gov-title">Pastoral Staff</div><div class="gov-desc">Led by Pastor Eddy Nubine — Staff Elders</div></div>
+        <div class="gov-card"><div class="gov-role">Protected By</div><div class="gov-title">Trustees</div><div class="gov-desc">7 members overseeing finances & facilities — Non-Staff Elders</div></div>
+        <div class="gov-card"><div class="gov-role">Strengthened By</div><div class="gov-title">Overseers</div><div class="gov-desc">5 pastors providing spiritual protection — Apostolic Elders</div></div>
+      </div>
+      <div class="st">Church Finances & Giving</div>
+      <div class="item"><div class="item-n">1</div><div class="item-text"><strong>Tithe</strong> — The first 10% of our income to the local church (Proverbs 3:9–10)</div></div>
+      <div class="item"><div class="item-n">2</div><div class="item-text"><strong>Offerings</strong> — Giving over and above the tithe (1 Timothy 6:18–19)</div></div>
+      <div class="item"><div class="item-n">3</div><div class="item-text"><strong>Gift of Giving</strong> — A Spirit-given capacity to give far beyond the tithe (Romans 12:8)</div></div>
+      <div class="verse"><div class="verse-text">"Bring the whole tithe into the storehouse... Test me in this, says the Lord Almighty, and see if I will not throw open the floodgates of heaven."</div><div class="verse-ref">— MALACHI 3:10</div></div>
+      <div class="st teal">Membership Covenant</div>
+      <p>Having received Christ as my Lord and Savior, I unite with the Overflow Church family and make the following commitments:</p>
+      <div class="covenant-box">
+        <div class="covenant-item"><div class="covenant-head">1. I will Protect UNITY:</div><div class="covenant-body">Act in love toward other members · Refuse to gossip · Follow the leaders</div></div>
+        <div class="covenant-item"><div class="covenant-head">2. I will Share RESPONSIBILITY:</div><div class="covenant-body">Pray for its growth · Invite the unchurched · Warmly welcome visitors</div></div>
+        <div class="covenant-item"><div class="covenant-head">3. I will Serve the MINISTRY:</div><div class="covenant-body">Discover my gifts · Use them to make a difference · Develop a servant's heart</div></div>
+        <div class="covenant-item" style="margin-bottom:0"><div class="covenant-head">4. I will Support the TESTIMONY:</div><div class="covenant-body">Attend faithfully · Live a Godly life · Give regularly</div></div>
+      </div>
+      <div class="complete-box"><p>✅ Ready to move on? Mark this step complete!</p><button class="btn-complete" id="bc1" onclick="markDone(1)">Mark Step 1 Complete</button></div>
+      <div class="nav-arrows"><button class="btn-prev" onclick="goTabN(0)">← Previous</button><button class="btn-next" onclick="goTabN(2)">Next →</button></div>
+    </div>
+
+    <!-- TAB 2: SET -->
+    <div class="tab" id="tab2">
+      <div class="step-banner teal"><div class="step-label">Step Two · 2nd Sunday of Every Month</div><div class="step-word">SET</div><div class="step-tagline">Discover Your Design</div></div>
+      <div class="verse"><div class="verse-text">"You made all the delicate, inner parts of my body and knit me together in my mother's womb. Thank You for making me so wonderfully complex!"</div><div class="verse-ref">— PSALM 139:13–14 NLT</div></div>
+      <p style="font-weight:bold;text-align:center;font-size:15px;margin:12px 0">My purpose is to serve God by serving others.</p>
+      <div class="item"><div class="item-n teal">1</div><div class="item-text"><strong>My Gifts & Passions</strong> — We have different gifts, according to the grace given us. (Romans 12:6)</div></div>
+      <div class="item"><div class="item-n teal">2</div><div class="item-text"><strong>My Life Experience</strong> — Take your everyday, ordinary life and place it before God as an offering. (Romans 12:1 MSG)</div></div>
+      <div class="item"><div class="item-n teal">3</div><div class="item-text"><strong>My Pain</strong> — God comforts us in all our troubles so that we can comfort others. (2 Corinthians 1:3–4)</div></div>
+
+      <div class="st teal">Personality / Leadership Style — DISC Assessment</div>
+      <p>Rate each statement: <strong>1 = Not Like Me · 2 = Somewhat Like Me · 3 = Like Me · 4 = Very Much Like Me</strong></p>
+      <div class="assessment-box">
+        <h3>DISC Self-Assessment (16 Questions)</h3>
+        <div class="a-intro">Answer honestly based on how you naturally behave. There are no right or wrong answers.</div>
+        <div id="disc-qs"></div>
+        <button class="btn-submit" onclick="scoreDISC()">See My DISC Results</button>
+        <div class="results-panel" id="disc-res"></div>
+        <button class="btn-retake" id="disc-retake" onclick="resetDISC()">Retake DISC Assessment</button>
+      </div>
+
+      <div class="st">Spiritual Gifts Assessment</div>
+      <p>Rate each statement: <strong>1 = Almost Never · 2 = Sometimes · 3 = Almost Always</strong><br>Your top 3 scores reveal your primary spiritual gifts.</p>
+      <div class="verse teal"><div class="verse-text">"Very truly I tell you, whoever believes in me will do the works I have been doing, and they will do even greater things than these."</div><div class="verse-ref">— JOHN 14:12</div></div>
+      <div class="assessment-box">
+        <h3>Spiritual Gifts Assessment (72 Questions)</h3>
+        <div class="a-intro">Answer all 72 statements honestly, then click "See My Gifts" to discover your top 3 spiritual gifts.</div>
+        <div id="gifts-qs"></div>
+        <button class="btn-submit" onclick="scoreGifts()">See My Gifts</button>
+        <div class="results-panel" id="gifts-res"></div>
+        <button class="btn-retake" id="gifts-retake" onclick="resetGifts()">Retake Gifts Assessment</button>
+      </div>
+
+      <!-- SUBMIT RESULTS TO PASTOR -->
+      <div id="submit-results-box" style="display:none;background:#1a1a1a;border:1px solid var(--gold);border-radius:10px;padding:24px;margin:20px 0;text-align:center;">
+        <div style="color:var(--gold);font-family:Arial,sans-serif;font-weight:bold;font-size:16px;margin-bottom:8px">🎉 Assessments Complete!</div>
+        <div style="color:#bbb;font-size:13px;line-height:1.6;margin-bottom:20px">You've completed both assessments. Click below to send your results to Pastor Eddy so he can help you find the best place to serve at Overflow Church.</div>
+        <button id="submit-btn" onclick="submitResults()" style="background:var(--gold);border:none;color:#0d0d0d;padding:14px 32px;border-radius:8px;cursor:pointer;font-family:Arial,sans-serif;font-weight:bold;font-size:15px;">Submit My Results</button>
+        <div id="submit-confirm" style="display:none;margin-top:16px;color:#4caf50;font-size:13px;font-family:Arial,sans-serif;">✅ Pastor Eddy has received your results and will be in touch to help you find your place on the Dream Team!</div>
+      </div>
+
+      <div class="st teal">The 24 Spiritual Gifts — Reference</div>
+      <div class="grid4">
+        <div class="gift-card"><div class="gift-letter">A</div><div class="gift-name">Administration</div><div class="gift-desc">Organizing multiple tasks and groups to accomplish ministry goals</div></div>
+        <div class="gift-card"><div class="gift-letter">B</div><div class="gift-name">Apostleship</div><div class="gift-desc">Pioneering new churches and ministries in unreached areas</div></div>
+        <div class="gift-card"><div class="gift-letter">C</div><div class="gift-name">Craftsmanship</div><div class="gift-desc">Building and working with hands in ministry environments</div></div>
+        <div class="gift-card"><div class="gift-letter">D</div><div class="gift-name">Discernment</div><div class="gift-desc">Identifying falsehood and distinguishing right from wrong</div></div>
+        <div class="gift-card"><div class="gift-letter">E</div><div class="gift-name">Evangelism</div><div class="gift-desc">Helping non-Christians take steps toward becoming Christ followers</div></div>
+        <div class="gift-card"><div class="gift-letter">F</div><div class="gift-name">Exhortation</div><div class="gift-desc">Encouraging others through the written or spoken word</div></div>
+        <div class="gift-card"><div class="gift-letter">G</div><div class="gift-name">Faith</div><div class="gift-desc">Believing God for unseen supernatural results in every area</div></div>
+        <div class="gift-card"><div class="gift-letter">H</div><div class="gift-name">Giving</div><div class="gift-desc">Producing wealth and giving generously to advance God's Kingdom</div></div>
+        <div class="gift-card"><div class="gift-letter">I</div><div class="gift-name">Healing</div><div class="gift-desc">Acting as intermediary in faith and prayer for physical healing</div></div>
+        <div class="gift-card"><div class="gift-letter">J</div><div class="gift-name">Helps</div><div class="gift-desc">Working in a supportive role to accomplish ministry tasks</div></div>
+        <div class="gift-card"><div class="gift-letter">K</div><div class="gift-name">Hospitality</div><div class="gift-desc">Creating warm, welcoming environments for others to feel at home</div></div>
+        <div class="gift-card"><div class="gift-letter">L</div><div class="gift-name">Intercession</div><div class="gift-desc">Standing in the gap in prayer for profound results</div></div>
+        <div class="gift-card"><div class="gift-letter">M</div><div class="gift-name">Knowledge</div><div class="gift-desc">Understanding and bringing clarity to situations from God</div></div>
+        <div class="gift-card"><div class="gift-letter">N</div><div class="gift-name">Leadership</div><div class="gift-desc">Influencing and directing people toward a God-given vision</div></div>
+        <div class="gift-card"><div class="gift-letter">O</div><div class="gift-name">Mercy</div><div class="gift-desc">Feeling empathy and caring deeply for those who are hurting</div></div>
+        <div class="gift-card"><div class="gift-letter">P</div><div class="gift-name">Miracles</div><div class="gift-desc">Altering natural outcomes supernaturally through prayer and faith</div></div>
+        <div class="gift-card"><div class="gift-letter">Q</div><div class="gift-name">Missionary</div><div class="gift-desc">Reaching others outside your culture and nationality for Christ</div></div>
+        <div class="gift-card"><div class="gift-letter">R</div><div class="gift-name">Music/Worship</div><div class="gift-desc">Using music and song to help others encounter and worship God</div></div>
+        <div class="gift-card"><div class="gift-letter">S</div><div class="gift-name">Pastor/Shepherd</div><div class="gift-desc">Caring for the personal and spiritual needs of others</div></div>
+        <div class="gift-card"><div class="gift-letter">T</div><div class="gift-name">Prophecy</div><div class="gift-desc">Boldly speaking and bringing clarity to scriptural truth</div></div>
+        <div class="gift-card"><div class="gift-letter">U</div><div class="gift-name">Service</div><div class="gift-desc">Doing small or great tasks for the overall good of the body</div></div>
+        <div class="gift-card"><div class="gift-letter">V</div><div class="gift-name">Teaching</div><div class="gift-desc">Studying Scripture to bring understanding and growth to others</div></div>
+        <div class="gift-card"><div class="gift-letter">W</div><div class="gift-name">Tongues</div><div class="gift-desc">Praying in a heavenly language to commune with God</div></div>
+        <div class="gift-card"><div class="gift-letter">X</div><div class="gift-name">Wisdom</div><div class="gift-desc">Applying truths of Scripture practically to produce fruitful outcomes</div></div>
+      </div>
+      <div class="complete-box"><p>✅ Completed your assessments? Mark this step complete!</p><button class="btn-complete" id="bc2" onclick="markDone(2)">Mark Step 2 Complete</button></div>
+      <div class="nav-arrows"><button class="btn-prev" onclick="goTabN(1)">← Previous</button><button class="btn-next" onclick="goTabN(3)">Next →</button></div>
+    </div>
+
+    <!-- TAB 3: SERVE -->
+    <div class="tab" id="tab3">
+      <div class="step-banner gold"><div class="step-label">Step Three · 3rd Sunday of Every Month</div><div class="step-word">SERVE</div><div class="step-tagline">Develop Your Leadership</div></div>
+      <div class="verse teal"><div class="verse-text">"God has given each of you a gift from His great variety of spiritual gifts. Use them well to serve one another."</div><div class="verse-ref">— 1 PETER 4:10 NLT</div></div>
+      <div style="text-align:center;font-style:italic;font-weight:bold;font-size:17px;margin:16px 0;color:var(--black)">"Leadership is influence. Nothing more. Nothing less."</div>
+      <p>Leadership is not dependent on titles or positions. Many people hold back due to four common barriers:</p>
+      <div class="grid2">
+        <div style="background:#fff;border-top:4px solid var(--gold);padding:14px;border-radius:0 0 8px 8px;box-shadow:0 2px 6px rgba(0,0,0,0.07)"><div style="font-weight:bold;font-size:13px;color:var(--black);margin-bottom:4px">"Who am I?"</div><div style="font-size:12px;color:#666">Insecurity — feeling unqualified</div></div>
+        <div style="background:#fff;border-top:4px solid var(--gold);padding:14px;border-radius:0 0 8px 8px;box-shadow:0 2px 6px rgba(0,0,0,0.07)"><div style="font-weight:bold;font-size:13px;color:var(--black);margin-bottom:4px">"What if they?"</div><div style="font-size:12px;color:#666">Fear of others' reactions</div></div>
+        <div style="background:#fff;border-top:4px solid var(--gold);padding:14px;border-radius:0 0 8px 8px;box-shadow:0 2px 6px rgba(0,0,0,0.07)"><div style="font-weight:bold;font-size:13px;color:var(--black);margin-bottom:4px">"I have never."</div><div style="font-size:12px;color:#666">Inadequacy / lack of experience</div></div>
+        <div style="background:#fff;border-top:4px solid var(--gold);padding:14px;border-radius:0 0 8px 8px;box-shadow:0 2px 6px rgba(0,0,0,0.07)"><div style="font-weight:bold;font-size:13px;color:var(--black);margin-bottom:4px">"Use someone else."</div><div style="font-size:12px;color:#666">Reluctance to step forward</div></div>
+      </div>
+      <div class="verse teal"><div class="verse-text">"But you are a chosen generation, a royal priesthood, a holy nation, His own special people, that you may proclaim the praises of Him who called you out of darkness into His marvelous light."</div><div class="verse-ref">— 1 PETER 2:9 NKJV</div></div>
+      <div class="st">Qualities of a Leader — Daniel 6:1–3</div>
+      <div class="quality-card"><div class="quality-inner"><div class="quality-num">1</div><div><div class="quality-h">We Love God</div><div class="quality-d">Develop your closeness with God, your character, and your calling. "They took note that these men had been with Jesus." — Acts 4:13</div></div></div></div>
+      <div class="quality-card teal"><div class="quality-inner"><div class="quality-num">2</div><div><div class="quality-h">We Love People</div><div class="quality-d">Be a servant. Be a team player. Be real. "Whoever wants to become great among you must be your servant." — Mark 10:43</div></div></div></div>
+      <div class="quality-card"><div class="quality-inner"><div class="quality-num">3</div><div><div class="quality-h">We Pursue Excellence</div><div class="quality-d">Do things well. Do them before you're asked. Do more than expected. "He has done everything well." — Mark 7:37</div></div></div></div>
+      <div class="quality-card teal"><div class="quality-inner"><div class="quality-num">4</div><div><div class="quality-h">We Choose Joy</div><div class="quality-d">Be enjoyable. Be positive. Be loyal. "Sorrowful, yet always rejoicing." — 2 Corinthians 6:10</div></div></div></div>
+      <div class="st teal">Leader Declaration</div>
+      <div class="declaration">Because God has called me to serve my generation, I will value worship over wealth, "we" over "me," character over comfort, service over status, and God's purposes over possessions, positions, popularity, and pleasure.<br><br>To my Lord and Savior Jesus Christ, I say: <span style="color:var(--gold);font-weight:bold">However, whenever, wherever, and whatever you ask me to do, my answer in advance is YES!</span> Wherever you lead and whatever the cost, I'm ready anytime, anywhere.<br><br><span style="color:var(--teal)">"Well done, good and faithful servant. Come on in, and let the eternal party begin!"</span></div>
+      <div class="st">Leadership Honor Code</div>
+      <p>Overflow Church leaders maintain a disciplined life of Bible reading, prayer, and fasting. As servant-leaders, we commit to refraining from profanity, smoking, gambling, substance abuse, pornography, sexual immorality, and all behaviors which might cause Christ to grieve and others to stumble.</p>
+      <div class="complete-box"><p>✅ Ready to move on? Mark this step complete!</p><button class="btn-complete" id="bc3" onclick="markDone(3)">Mark Step 3 Complete</button></div>
+      <div class="nav-arrows"><button class="btn-prev" onclick="goTabN(2)">← Previous</button><button class="btn-next" onclick="goTabN(4)">Next →</button></div>
+    </div>
+
+    <!-- TAB 4: GO -->
+    <div class="tab" id="tab4">
+      <div class="step-banner teal"><div class="step-label">Step Four · 4th Sunday of Every Month</div><div class="step-word">GO</div><div class="step-tagline">Join the Team</div></div>
+      <div class="st">Make a Difference</div>
+      <div class="item"><div class="item-n teal">1</div><div class="item-text"><strong>I want to make a difference</strong> — "He saved us and then called us to this holy work." — 2 Timothy 1:9 MSG</div></div>
+      <div class="item"><div class="item-n teal">2</div><div class="item-text"><strong>Doing something that matters</strong> — Build with gold, silver, and jewels — work that survives and receives a reward. — 1 Corinthians 3:12–15</div></div>
+      <div class="item"><div class="item-n teal">3</div><div class="item-text"><strong>With people who want to make a difference</strong> — "Two are better than one." — Ecclesiastes 4:9</div></div>
+      <div class="st teal">How to Begin Serving on the Dream Team</div>
+      <div class="item"><div class="item-n">1</div><div class="item-text">Attend an orientation session in the ministry area of your choice</div></div>
+      <div class="item"><div class="item-n">2</div><div class="item-text">Complete the Dream Team application</div></div>
+      <div class="item"><div class="item-n">3</div><div class="item-text">Participate in a one-on-one conversation with a team member</div></div>
+      <div class="item"><div class="item-n">4</div><div class="item-text">Submit your application at the check-out desk</div></div>
+      <div class="st">Dream Team Descriptions</div>
+      <div class="grid-teams">
+        <div class="team-card"><div class="team-name">A-Team</div><div class="team-desc">Administration support — computer skills, data entry, attention to detail</div><div class="team-req">18+ · Background Check</div></div>
+        <div class="team-card"><div class="team-name">Baptism Team</div><div class="team-desc">Prepares for and hosts the Overflow baptism experience</div></div>
+        <div class="team-card"><div class="team-name">Campus Host Team</div><div class="team-desc">Personal touch in the lobby, coffee stations, and auditorium</div></div>
+        <div class="team-card"><div class="team-name">Campus Support Team</div><div class="team-desc">Behind-the-scenes maintenance and support for every area</div></div>
+        <div class="team-card"><div class="team-name">Homeless Ministry</div><div class="team-desc">Facilitates events to reach the homeless community</div><div class="team-req">18+ · Background Check</div></div>
+        <div class="team-card"><div class="team-name">Dream Team Host</div><div class="team-desc">Hosts Dream Team members with food and encouragement</div></div>
+        <div class="team-card"><div class="team-name">Events Team</div><div class="team-desc">Serves at conferences and church-wide events</div></div>
+        <div class="team-card"><div class="team-name">First Responders</div><div class="team-desc">Healthcare professionals providing basic medical care in emergencies</div><div class="team-req">Medical Cert · Background Check</div></div>
+        <div class="team-card"><div class="team-name">Greeter Team</div><div class="team-desc">Welcomes people at the front doors and auditorium entrance</div></div>
+        <div class="team-card"><div class="team-name">Growth Track Host</div><div class="team-desc">Hosts the Flow & Grow Track for new members</div></div>
+        <div class="team-card"><div class="team-name">Overflow Haven</div><div class="team-desc">Serves children with special needs with intentional care</div><div class="team-req">18+ · Background Check</div></div>
+        <div class="team-card"><div class="team-name">Overflow Kids</div><div class="team-desc">Invests in children through worship, Bible teaching & Small Groups</div><div class="team-req">Background Check</div></div>
+        <div class="team-card"><div class="team-name">Overflow Students</div><div class="team-desc">Connects students through events, retreats, and Sunday service</div><div class="team-req">Background Check</div></div>
+        <div class="team-card"><div class="team-name">Overflow Worship</div><div class="team-desc">Facilitates worship through vocals, instruments, and audio</div><div class="team-req">Training · Background Check</div></div>
+        <div class="team-card"><div class="team-name">JV Dream Team</div><div class="team-desc">6th–8th graders serving in preschool and kids areas</div></div>
+        <div class="team-card"><div class="team-name">Kids Check-In</div><div class="team-desc">Ensures children are cared for through the check-in process</div><div class="team-req">18+ · Background Check</div></div>
+        <div class="team-card"><div class="team-name">OFC Legacy Team</div><div class="team-desc">Uses the gift of giving to support major projects and the vision</div></div>
+        <div class="team-card"><div class="team-name">Next Steps Info</div><div class="team-desc">Helps people identify their next steps and provides resources</div></div>
+        <div class="team-card"><div class="team-name">Nursery/Preschool</div><div class="team-desc">Ministers to young children through stories, worship, and prayer</div><div class="team-req">Background Check</div></div>
+        <div class="team-card"><div class="team-name">Online Campus</div><div class="team-desc">Connects worldwide guests through prayer and online conversation</div></div>
+        <div class="team-card"><div class="team-name">Parking Team</div><div class="team-desc">First impression — welcoming and guiding guests to parking</div><div class="team-req">Age 15+</div></div>
+        <div class="team-card"><div class="team-name">Prayer Team</div><div class="team-desc">Provides prayer covering for services, teams, and ministries</div></div>
+        <div class="team-card"><div class="team-name">Production Team</div><div class="team-desc">Assists with lights, cameras, and visuals for worship experience</div></div>
+        <div class="team-card"><div class="team-name">Resource Team</div><div class="team-desc">Prepares worship guides, communion elements, and materials</div></div>
+        <div class="team-card"><div class="team-name">Set Up/Take Down</div><div class="team-desc">Sets up before and takes down after service at portable campuses</div></div>
+        <div class="team-card"><div class="team-name">Small Group Leaders</div><div class="team-desc">Trained to facilitate groups and help members find next steps</div><div class="team-req">Background Check</div></div>
+        <div class="team-card"><div class="team-name">Usher Team</div><div class="team-desc">Assists seating, facilitates offering, maintains a focused service</div></div>
+        <div class="team-card"><div class="team-name">Nursing Homes/Outreach</div><div class="team-desc">Serves nursing homes, senior centers, and community outreach</div><div class="team-req">Background Check</div></div>
+      </div>
+      <div class="congrats"><div class="congrats-title">🎉 Congratulations!</div><p style="color:#fff;font-size:14px;line-height:1.8">You now have the tools to <strong>know God</strong>, <strong>find freedom</strong>, <strong>discover purpose</strong>, and <strong>make a difference</strong>. We are excited for all that God is about to do in and through you!</p></div>
+      <div class="complete-box"><p>✅ Finished all 4 steps? Mark this step complete!</p><button class="btn-complete" id="bc4" onclick="markDone(4)">Mark Step 4 Complete</button></div>
+      <div class="nav-arrows"><button class="btn-prev" onclick="goTabN(3)">← Previous</button><button class="btn-next" onclick="goTabN(5)">Next →</button></div>
+    </div>
+
+    <!-- TAB 5: FAITH -->
+    <div class="tab" id="tab5">
+      <div class="step-banner gold"><div class="step-label">Appendix</div><div class="step-word" style="font-size:26px">Statement of Faith</div><div class="step-tagline">What We Believe at Overflow Church</div></div>
+      <div class="faith-item"><div class="faith-title">Holy Bible</div><div class="faith-text">The Holy Bible alone is the authoritative Word of God — inspired, infallible, and inerrant.</div><div class="faith-ref">2 Timothy 3:16 · 2 Peter 1:20–21 · Proverbs 30:5</div></div>
+      <div class="faith-item"><div class="faith-title">Trinity</div><div class="faith-text">There is one God, eternally existent in three coequal persons: Father, Son, and Holy Spirit.</div><div class="faith-ref">1 John 5:7 · Matthew 3:16–17 · Matthew 28:19</div></div>
+      <div class="faith-item"><div class="faith-title">Jesus Christ</div><div class="faith-text">Jesus Christ is God the Son — 100% God and 100% man. Born of a virgin, He died, rose, and will return again.</div><div class="faith-ref">John 1:1,14 · Isaiah 9:6 · 1 Timothy 2:5</div></div>
+      <div class="faith-item"><div class="faith-title">Salvation</div><div class="faith-text">We are saved by grace through faith in Jesus Christ — a gift from God, not works.</div><div class="faith-ref">Ephesians 2:8–9 · Titus 3:5 · Romans 10:9–10</div></div>
+      <div class="faith-item"><div class="faith-title">The Holy Spirit & Spiritual Gifts</div><div class="faith-text">The Holy Spirit is manifested through spiritual gifts to build and sanctify the church.</div><div class="faith-ref">1 Corinthians 12:1–31 · Romans 12:4–8 · 1 Peter 4:10</div></div>
+      <div class="faith-item"><div class="faith-title">Baptism</div><div class="faith-text">Water baptism follows faith in Jesus Christ. The Lord's Supper remembers His sacrifice.</div><div class="faith-ref">Matthew 28:19 · Acts 2:38 · 1 Corinthians 11:23–25</div></div>
+      <div class="faith-item"><div class="faith-title">Marriage</div><div class="faith-text">Marriage is a sacred covenant between one man and one woman before God.</div><div class="faith-ref">Matthew 19:4–6</div></div>
+      <div class="faith-item" style="border-bottom:none"><div class="faith-title">Second Coming</div><div class="faith-text">Jesus Christ will physically return to establish His Kingdom at an undisclosed time.</div><div class="faith-ref">Matthew 24:30 · 1 Thessalonians 4:15–17 · Revelation 1:7</div></div>
+      <div class="nav-arrows"><button class="btn-prev" onclick="goTabN(4)">← Previous</button><div></div></div>
+    </div>
+
+  </div>
+  <footer><div class="f1">Overflow Church · Houston, Texas</div><div class="f2">Ready · Set · Serve · Go</div></footer>
+</div>
+
+<script>
+var USER="";
+var ACCESS="ReadySetServeGo";
+var DISC_RESULT="";
+var GIFTS_RESULT="";
+var FORMSPREE_ID="xlgpjvzj"; // Replace with your Formspree form ID
+
+function doLogin(){
+  var n=document.getElementById('iname').value.trim();
+  var c=document.getElementById('icode').value.trim();
+  var e=document.getElementById('errmsg');
+  e.style.display='none';
+  if(!n){e.textContent='Please enter your name.';e.style.display='block';return;}
+  if(c!==ACCESS){e.textContent='Access code is incorrect. Please check with your pastor or church staff.';e.style.display='block';return;}
+  USER=n;
+  document.getElementById('wname').textContent='Overflow Church · Welcome, '+n+'!';
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+  loadProgress();
+}
+function doLogout(){
+  document.getElementById('iname').value='';
+  document.getElementById('icode').value='';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('app').style.display='none';
+  goTabN(0);
+}
+function goTab(i,btn){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.nav button').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab'+i).classList.add('active');
+  if(btn)btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+function goTabN(i){
+  var btns=document.querySelectorAll('.nav button');
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  btns.forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab'+i).classList.add('active');
+  if(btns[i])btns[i].classList.add('active');
+  window.scrollTo(0,0);
+}
+function markDone(s){
+  try{localStorage.setItem('ofc_'+USER+'_s'+s,'1');}catch(e){}
+  applyDone(s);
+}
+function applyDone(s){
+  var bc=document.getElementById('bc'+s);
+  if(bc){bc.textContent='✓ Step '+s+' Complete!';bc.classList.add('done');bc.disabled=true;}
+  var nb=document.getElementById('nb'+s);
+  if(nb)nb.classList.add('done');
+  var b=document.getElementById('b'+s);
+  if(b)b.classList.add('show');
+}
+function loadProgress(){
+  for(var s=1;s<=4;s++){
+    try{if(localStorage.getItem('ofc_'+USER+'_s'+s)==='1')applyDone(s);}catch(e){}
+  }
+}
+
+/* ── DISC ── */
+var DISC_Q=[
+  {t:'D',q:"I enjoy taking charge and making decisions quickly"},
+  {t:'D',q:"I am competitive and love to win"},
+  {t:'D',q:"I tackle problems head-on and don't back down from challenges"},
+  {t:'D',q:"I prefer to get results over maintaining relationships"},
+  {t:'I',q:"I love meeting new people and starting conversations easily"},
+  {t:'I',q:"I am enthusiastic and inspire others with my energy"},
+  {t:'I',q:"I enjoy being the center of attention in social settings"},
+  {t:'I',q:"I tend to be optimistic, even when things are difficult"},
+  {t:'S',q:"I prefer a stable, predictable environment over constant change"},
+  {t:'S',q:"I am a loyal and committed team player"},
+  {t:'S',q:"I work at a steady, consistent pace rather than rushing"},
+  {t:'S',q:"I go out of my way to avoid conflict and keep peace"},
+  {t:'C',q:"I pay close attention to details and accuracy"},
+  {t:'C',q:"I prefer to follow established rules and procedures"},
+  {t:'C',q:"I analyze situations carefully before making decisions"},
+  {t:'C',q:"I hold myself and others to high standards of quality"}
+];
+var DISC_INFO={
+  D:{name:'Dominant',color:'#d97706',desc:'You are direct, decisive, and results-oriented. You thrive on challenges and authority. Best fit: leadership roles, pioneering new ministry areas.'},
+  I:{name:'Influential',color:'#16a34a',desc:'You are inspiring, optimistic, and people-oriented. You motivate others and love collaboration. Best fit: outreach, hospitality, worship, and communication roles.'},
+  S:{name:'Steady',color:'#2563eb',desc:'You are stable, loyal, and a great team player. You bring peace and consistency. Best fit: children\'s ministry, prayer teams, support roles, and small groups.'},
+  C:{name:'Compliant',color:'#9333ea',desc:'You are analytical, accurate, and thorough. You bring quality and order. Best fit: administration, planning, finances, and technical ministry support.'}
+};
+
+function buildDISC(){
+  var h='';
+  DISC_Q.forEach(function(d,i){
+    h+='<div class="q-block"><div class="q-text">'+(i+1)+'. '+d.q+'</div><div class="q-scale">';
+    [1,2,3,4].forEach(function(v){
+      var l=['','Not Like Me','Somewhat Like Me','Like Me','Very Much Like Me'][v];
+      h+='<label class="q-opt"><input type="radio" name="dq'+i+'" value="'+v+'"><span>'+v+' — '+l+'</span></label>';
+    });
+    h+='</div></div>';
+  });
+  document.getElementById('disc-qs').innerHTML=h;
+}
+function scoreDISC(){
+  var sc={D:0,I:0,S:0,C:0},ok=true;
+  DISC_Q.forEach(function(d,i){
+    var r=document.querySelector('input[name="dq'+i+'"]:checked');
+    if(!r){ok=false;return;}
+    sc[d.t]+=parseInt(r.value);
+  });
+  if(!ok){alert('Please answer all 16 questions.');return;}
+  var sorted=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];});
+  var h='<h3>Your DISC Results</h3>';
+  sorted.forEach(function(t,i){
+    var info=DISC_INFO[t];
+    var pct=Math.round((sc[t]/16)*100);
+    h+='<div style="background:#1a1a1a;border-left:4px solid '+info.color+';padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:12px">';
+    if(i===0)h+='<div style="font-size:11px;font-family:Arial;font-weight:bold;text-transform:uppercase;color:'+info.color+';margin-bottom:4px">Primary Style</div>';
+    if(i===1)h+='<div style="font-size:11px;font-family:Arial;font-weight:bold;text-transform:uppercase;color:'+info.color+';margin-bottom:4px">Secondary Style</div>';
+    h+='<div style="color:#fff;font-weight:bold;font-size:16px;margin-bottom:4px">'+t+' — '+info.name+'</div>';
+    h+='<div class="bar-wrap"><div class="bar-fill" style="width:'+pct+'%;background:'+info.color+'"></div></div>';
+    if(i===0)h+='<div style="color:#aaa;font-size:12px;line-height:1.5;margin-top:8px">'+info.desc+'</div>';
+    h+='</div>';
+  });
+  var el=document.getElementById('disc-res');
+  el.innerHTML=h; el.style.display='block';
+  document.getElementById('disc-retake').style.display='inline-block';
+  DISC_RESULT=sorted[0]+' — '+DISC_INFO[sorted[0]].name+' (Primary), '+sorted[1]+' — '+DISC_INFO[sorted[1]].name+' (Secondary)';
+  checkShowSubmit();
+}
+function resetDISC(){
+  document.getElementById('disc-res').style.display='none';
+  document.getElementById('disc-retake').style.display='none';
+  buildDISC();
+}
+
+/* ── SPIRITUAL GIFTS ── */
+var GIFTS=[
+  {name:'Administration',desc:'Organizing multiple tasks and groups to accomplish ministry goals',qs:["I enjoy creating systems and organizing people to accomplish a goal","I am good at managing multiple tasks and keeping projects on track","I naturally take responsibility for planning and coordinating events or activities"]},
+  {name:'Apostleship',desc:'Pioneering new churches and ministries in unreached areas',qs:["I feel called to start new ministries or churches in places where none exist","I am comfortable crossing cultural boundaries to share the gospel","I have a deep desire to pioneer something new for God in unreached places"]},
+  {name:'Craftsmanship',desc:'Building and working with hands in ministry environments',qs:["I use my hands-on skills (building, art, technology) to serve in ministry","I feel fulfilled when I use practical skills to support the church's mission","I am gifted in creating or constructing things that serve ministry purposes"]},
+  {name:'Discernment',desc:'Identifying falsehood and distinguishing right from wrong',qs:["I can often sense when something is spiritually off, even when others don't","I have a strong ability to distinguish truth from error in teaching or behavior","I have a deep sensitivity to the spiritual atmosphere in a room or situation"]},
+  {name:'Evangelism',desc:'Helping non-Christians take steps toward becoming Christ followers',qs:["I find it natural and exciting to share my faith with those who don't know Jesus","I regularly look for opportunities to tell others about salvation","People often respond to the gospel when I share it with them"]},
+  {name:'Exhortation',desc:'Encouraging others through the written or spoken word',qs:["People often come to me when they need encouragement or counsel","I have a natural ability to motivate others through my words","I am gifted at helping people see hope and take steps of faith when they are struggling"]},
+  {name:'Faith',desc:'Believing God for unseen supernatural results in every area',qs:["I have a strong, unshakeable belief that God will accomplish what He has promised","I often trust God for things that seem impossible to others","I sense God calling me to pray boldly for things that require great faith"]},
+  {name:'Giving',desc:"Producing wealth and giving generously to advance God's Kingdom",qs:["I feel a strong desire to give financially beyond my tithe to support ministry","I am motivated to earn or save money specifically so I can give more to God's work","I feel joy when I give generously to support the church or those in need"]},
+  {name:'Healing',desc:'Acting as intermediary in faith and prayer for physical healing',qs:["I have experienced God using me to bring physical or emotional healing to others","I feel a strong calling to pray for the sick and believe God for healing","I regularly see positive results when I pray for others' physical needs"]},
+  {name:'Helps',desc:'Working in a supportive role to accomplish ministry tasks',qs:["I love supporting leaders by taking care of tasks that free them to focus on their calling","I feel fulfilled when I assist others in accomplishing their ministry goals","I am content working behind the scenes without needing recognition"]},
+  {name:'Hospitality',desc:'Creating warm, welcoming environments for others to feel at home',qs:["I love opening my home and making others feel welcome and comfortable","I have a natural ability to make strangers feel like they belong","Creating a warm, inviting environment comes easily and joyfully to me"]},
+  {name:'Intercession',desc:'Standing in the gap in prayer for profound results',qs:["I feel a deep burden to pray for extended periods for people and situations","God often places specific people or situations on my heart to pray for urgently","I experience powerful results when I pray and often feel moved to pray for hours"]},
+  {name:'Knowledge',desc:'Understanding and bringing clarity to situations from God',qs:["I have a deep love for studying and understanding Scripture","I often receive insights about situations that go beyond what I have studied","People regularly come to me for answers because of my depth of understanding"]},
+  {name:'Leadership',desc:'Influencing and directing people toward a God-given vision',qs:["People naturally follow my direction and look to me for guidance","I can cast a compelling vision and motivate groups of people to move toward a goal","I feel a strong responsibility to lead and direct others toward God's purposes"]},
+  {name:'Mercy',desc:'Feeling empathy and caring deeply for those who are hurting',qs:["I am deeply moved by the suffering of others and feel compelled to help","I have a strong ability to empathize with people who are hurting","People who are going through hard times are often drawn to me for comfort and care"]},
+  {name:'Miracles',desc:'Altering natural outcomes supernaturally through prayer and faith',qs:["I have witnessed God use me to bring about outcomes that defied natural explanation","I believe strongly that God still performs miracles today and expect to see them","I sense God calling me to pray boldly for supernatural intervention in impossible situations"]},
+  {name:'Missionary',desc:'Reaching others outside your culture and nationality for Christ',qs:["I have a strong passion for reaching people of different cultures with the gospel","I feel comfortable adapting to other cultures and learning new languages for ministry","I sense God's call on my life to serve in cross-cultural or international ministry"]},
+  {name:'Music/Worship',desc:'Using music and song to help others encounter and worship God',qs:["I use my musical ability (singing, instruments, songwriting) to help others worship God","When I lead or participate in worship, people are drawn into God's presence","I feel a strong calling to use music as a vehicle for ministry and spiritual encounter"]},
+  {name:'Pastor/Shepherd',desc:'Caring for the personal and spiritual needs of others',qs:["I feel a strong sense of responsibility for the long-term spiritual growth of others","I naturally take people under my care and invest deeply in their spiritual development","People trust me with their spiritual struggles and I feel equipped to guide and nurture them"]},
+  {name:'Prophecy',desc:'Boldly speaking and bringing clarity to scriptural truth',qs:["I feel a strong compulsion to speak God's truth boldly, even when it is difficult","I often receive timely words of insight or direction for others that prove to be accurate","I have a strong ability to apply Scripture to current situations with clarity and conviction"]},
+  {name:'Service',desc:'Doing small or great tasks for the overall good of the body',qs:["I find deep fulfillment in meeting practical needs for others in the church","I am happy to do any task, large or small, that benefits the body of Christ","I notice practical needs around me and feel compelled to meet them without being asked"]},
+  {name:'Teaching',desc:'Studying Scripture to bring understanding and growth to others',qs:["I have a deep love for studying Scripture and communicating what I learn to others","People regularly tell me that my teaching or explanation brought them clarity","I am gifted at breaking down complex biblical truths in ways others can understand and apply"]},
+  {name:'Tongues',desc:'Praying in a heavenly language to commune with God',qs:["I use the gift of tongues regularly in my personal prayer life","I feel my prayer life is enriched and empowered through praying in the Spirit","I sense that God uses this gift to build my faith and deepen my intimacy with Him"]},
+  {name:'Wisdom',desc:'Applying truths of Scripture practically to produce fruitful outcomes',qs:["I have a natural ability to apply biblical principles to real-life situations practically","People regularly come to me for advice and find my counsel to be helpful and sound","I can see beyond the surface of a situation and offer guidance that leads to lasting results"]}
+];
+
+function buildGifts(){
+  var h='',n=1;
+  GIFTS.forEach(function(g,gi){
+    g.qs.forEach(function(q,qi){
+      h+='<div class="q-block"><div class="q-text">'+n+'. '+q+'</div><div class="q-scale">';
+      [{v:1,l:'1 — Almost Never'},{v:2,l:'2 — Sometimes'},{v:3,l:'3 — Almost Always'}].forEach(function(o){
+        h+='<label class="q-opt"><input type="radio" name="gq'+gi+'_'+qi+'" value="'+o.v+'"><span>'+o.l+'</span></label>';
+      });
+      h+='</div></div>';
+      n++;
+    });
+  });
+  document.getElementById('gifts-qs').innerHTML=h;
+}
+function scoreGifts(){
+  var sc={},ok=true;
+  GIFTS.forEach(function(g,gi){
+    var t=0;
+    g.qs.forEach(function(q,qi){
+      var r=document.querySelector('input[name="gq'+gi+'_'+qi+'"]:checked');
+      if(!r){ok=false;return;}
+      t+=parseInt(r.value);
+    });
+    sc[g.name]=t;
+  });
+  if(!ok){alert('Please answer all 72 questions.');return;}
+  var sorted=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];});
+  var top3=sorted.slice(0,3);
+  var colors=['var(--gold)','var(--teal)','#888'];
+  var ranks=['🥇 Primary Gift','🥈 Secondary Gift','🥉 Third Gift'];
+  var h='<h3>Your Top Spiritual Gifts</h3><p style="color:#aaa;font-size:12px;margin-bottom:16px">Based on your responses, here are your top 3 spiritual gifts:</p>';
+  top3.forEach(function(name,i){
+    var gd=GIFTS.find(function(g){return g.name===name;});
+    var pct=Math.round((sc[name]/9)*100);
+    h+='<div style="background:#1a1a1a;border-left:4px solid '+colors[i]+';padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:12px">';
+    h+='<div style="font-size:11px;font-family:Arial;font-weight:bold;text-transform:uppercase;color:'+colors[i]+';margin-bottom:4px">'+ranks[i]+'</div>';
+    h+='<div style="color:#fff;font-weight:bold;font-size:15px;margin-bottom:4px">'+name+'</div>';
+    h+='<div style="color:#aaa;font-size:12px;line-height:1.5;margin-bottom:6px">'+gd.desc+'</div>';
+    h+='<div class="bar-wrap"><div class="bar-fill" style="width:'+pct+'%;background:'+colors[i]+'"></div></div>';
+    h+='<div style="font-size:11px;color:#555;margin-top:4px;font-family:Arial">Score: '+sc[name]+' / 9</div>';
+    h+='</div>';
+  });
+  h+='<p style="color:#888;font-size:12px;margin-top:16px;line-height:1.6">Talk with your pastor or Flow & Grow Track leader about how your gifts can be used in ministry at Overflow Church!</p>';
+  var el=document.getElementById('gifts-res');
+  el.innerHTML=h; el.style.display='block';
+  document.getElementById('gifts-retake').style.display='inline-block';
+  GIFTS_RESULT=top3.join(', ');
+  checkShowSubmit();
+}
+function resetGifts(){
+  document.getElementById('gifts-res').style.display='none';
+  document.getElementById('gifts-retake').style.display='none';
+  buildGifts();
+}
+
+function checkShowSubmit(){
+  if(DISC_RESULT && GIFTS_RESULT){
+    document.getElementById('submit-results-box').style.display='block';
+  }
+}
+
+function submitResults(){
+  var btn=document.getElementById('submit-btn');
+  btn.textContent='Sending...';
+  btn.disabled=true;
+  var data={
+    name: USER,
+    disc_result: DISC_RESULT,
+    top_gifts: GIFTS_RESULT,
+    _subject: 'Flow & Grow Track Results — '+USER
+  };
+  fetch('https://formspree.io/f/'+FORMSPREE_ID,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify(data)
+  }).then(function(r){
+    if(r.ok){
+      btn.textContent='✓ Results Sent to Pastor!';
+      btn.style.background='#4caf50';
+      document.getElementById('submit-confirm').style.display='block';
+    } else {
+      btn.textContent='Send Failed — Try Again';
+      btn.disabled=false;
+      btn.style.background='#c0392b';
+    }
+  }).catch(function(){
+    btn.textContent='Send Failed — Try Again';
+    btn.disabled=false;
+    btn.style.background='#c0392b';
+  });
+}
+
+buildDISC();
+buildGifts();
+</script>
+</body>
+</html>
