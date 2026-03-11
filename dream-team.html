@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Team Application — Overflow Church</title>
+<style>
+:root{--gold:#CFA933;--teal:#3BA3BF;--black:#0d0d0d;--cream:#f5f0e5;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;background:var(--black);color:#222;}
+
+/* LOGIN */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-box{width:100%;max-width:420px;}
+.ofc-circle{width:88px;height:88px;border-radius:50%;border:2px solid rgba(207,169,51,0.5);display:inline-flex;align-items:center;justify-content:center;font-size:26px;font-weight:bold;color:var(--gold);margin-bottom:14px;}
+.login-title{color:var(--gold);font-size:22px;font-weight:bold;margin-bottom:4px;font-family:Georgia,serif;}
+.login-sub{color:#aaa;font-size:13px;margin-bottom:28px;}
+.card{background:#1a1a1a;border-radius:12px;padding:30px 26px;border:1px solid rgba(207,169,51,0.25);}
+.card h2{color:#fff;font-size:16px;text-align:center;margin-bottom:6px;}
+.card p{color:#888;font-size:13px;text-align:center;margin-bottom:22px;line-height:1.6;}
+.lbl{display:block;color:#bbb;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+.linput{width:100%;padding:11px 13px;border-radius:7px;border:1px solid rgba(207,169,51,0.25);background:#222;color:#fff;font-size:14px;outline:none;margin-bottom:14px;}
+.linput:focus{border-color:var(--gold);}
+.btn-login{width:100%;padding:13px;border-radius:8px;background:var(--gold);border:none;cursor:pointer;color:var(--black);font-weight:bold;font-size:15px;}
+.err{background:#3a1010;border:1px solid #cc0055;border-radius:8px;padding:10px 14px;margin-bottom:14px;color:#f88;font-size:13px;display:none;}
+.login-footer{text-align:center;margin-top:18px;color:#444;font-size:11px;}
+.login-footer span{color:var(--gold);}
+
+/* APP */
+#app{display:none;min-height:100vh;background:var(--cream);}
+.header{background:var(--black);padding:16px 22px;border-bottom:2px solid var(--gold);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.header-title{color:var(--gold);font-weight:bold;font-size:18px;font-family:Georgia,serif;}
+.header-sub{color:var(--teal);font-size:11px;}
+.btn-signout{background:transparent;border:1px solid #444;color:#888;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:11px;}
+
+.content{max-width:780px;margin:0 auto;padding:28px 18px 60px;}
+
+/* Progress bar */
+.progress-wrap{background:#ddd;border-radius:20px;height:8px;margin-bottom:6px;}
+.progress-bar{height:8px;border-radius:20px;background:var(--gold);transition:width 0.4s;}
+.progress-label{font-size:11px;color:#888;margin-bottom:20px;text-align:right;}
+
+/* Steps */
+.step{display:none;}
+.step.active{display:block;}
+.step-banner{padding:22px 20px;border-radius:8px;margin-bottom:22px;}
+.step-banner.gold{background:var(--black);border-bottom:4px solid var(--gold);}
+.step-banner.teal{background:var(--teal);}
+.step-num{font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px;}
+.step-banner.gold .step-num{color:var(--teal);}
+.step-banner.teal .step-num{color:rgba(255,255,255,0.75);}
+.step-title{font-family:Georgia,serif;font-size:22px;font-weight:bold;}
+.step-banner.gold .step-title{color:var(--gold);}
+.step-banner.teal .step-title{color:#fff;}
+.step-desc{font-size:13px;font-style:italic;margin-top:4px;}
+.step-banner.gold .step-desc{color:#ccc;}
+.step-banner.teal .step-desc{color:rgba(255,255,255,0.85);}
+
+/* Form fields */
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:12px;font-weight:bold;color:#333;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.05em;}
+.form-label span{color:#c0392b;}
+.form-input{width:100%;padding:10px 12px;border:1.5px solid #ccc;border-radius:7px;font-size:14px;background:#fff;color:#222;outline:none;font-family:Arial,sans-serif;}
+.form-input:focus{border-color:var(--teal);}
+.form-textarea{width:100%;padding:10px 12px;border:1.5px solid #ccc;border-radius:7px;font-size:14px;background:#fff;color:#222;outline:none;resize:vertical;min-height:90px;font-family:Arial,sans-serif;}
+.form-textarea:focus{border-color:var(--teal);}
+.form-select{width:100%;padding:10px 12px;border:1.5px solid #ccc;border-radius:7px;font-size:14px;background:#fff;color:#222;outline:none;font-family:Arial,sans-serif;}
+.form-select:focus{border-color:var(--teal);}
+.form-row{display:grid;gap:14px;}
+.form-row.two{grid-template-columns:1fr 1fr;}
+.form-row.three{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:560px){.form-row.two,.form-row.three{grid-template-columns:1fr;}}
+
+/* Radio group */
+.radio-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.radio-opt{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #ccc;border-radius:20px;padding:7px 14px;cursor:pointer;font-size:13px;transition:all 0.15s;}
+.radio-opt:hover{border-color:var(--teal);}
+.radio-opt input{accent-color:var(--teal);}
+.radio-opt:has(input:checked){border-color:var(--teal);background:#e8f6fb;font-weight:bold;color:var(--teal);}
+
+/* Checkbox grid */
+.checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:6px;}
+.check-opt{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #ccc;border-radius:7px;padding:8px 12px;cursor:pointer;font-size:13px;}
+.check-opt:hover{border-color:var(--teal);}
+.check-opt input{accent-color:var(--teal);width:15px;height:15px;flex-shrink:0;}
+.check-opt:has(input:checked){border-color:var(--teal);background:#e8f6fb;}
+
+/* Section label */
+.sec-label{font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.1em;border-left:4px solid var(--gold);padding-left:10px;margin:22px 0 14px;color:var(--black);}
+.sec-label.teal{border-left-color:var(--teal);}
+
+/* Navigation */
+.nav-arrows{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #ddd;}
+.btn-prev{background:#fff;border:1.5px solid var(--gold);color:var(--gold);padding:10px 22px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:13px;}
+.btn-next{background:var(--gold);border:none;color:var(--black);padding:10px 22px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:13px;}
+.btn-submit-app{background:var(--teal);border:none;color:#fff;padding:12px 32px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:15px;width:100%;margin-top:8px;}
+.btn-submit-app:disabled{background:#aaa;cursor:default;}
+
+/* Agreement box */
+.agree-box{background:#fff;border:1.5px solid #ccc;border-radius:8px;padding:16px 18px;font-size:13px;color:#444;line-height:1.7;margin-bottom:16px;}
+
+/* Success screen */
+#success{display:none;min-height:100vh;background:var(--black);align-items:center;justify-content:center;padding:20px;}
+.success-card{background:#1a1a1a;border:1px solid var(--gold);border-radius:12px;padding:40px 32px;max-width:480px;width:100%;text-align:center;}
+.success-icon{font-size:52px;margin-bottom:16px;}
+.success-title{color:var(--gold);font-family:Georgia,serif;font-size:24px;font-weight:bold;margin-bottom:10px;}
+.success-msg{color:#ccc;font-size:14px;line-height:1.8;}
+.success-verse{color:var(--teal);font-size:13px;font-style:italic;margin-top:20px;border-top:1px solid rgba(207,169,51,0.2);padding-top:16px;}
+
+footer{background:var(--black);border-top:2px solid var(--gold);padding:18px;text-align:center;}
+footer .f1{color:var(--gold);font-weight:bold;font-size:12px;}
+footer .f2{color:#555;font-size:10px;margin-top:3px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-box">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div class="ofc-circle">OFC</div>
+      <div class="login-title">Overflow Church</div>
+      <div style="color:var(--gold);font-size:15px;font-weight:bold;margin-bottom:4px;">Dream Team Application</div>
+      <div class="login-sub">Houston, Texas</div>
+    </div>
+    <div class="card">
+      <h2>Secure Access</h2>
+      <p>Please enter your name and the access code provided by your pastor or church staff to begin your application.</p>
+      <label class="lbl">Your Full Name</label>
+      <input type="text" class="linput" id="iname" placeholder="First & Last Name"/>
+      <label class="lbl">Access Code</label>
+      <input type="password" class="linput" id="icode" placeholder="Enter access code" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div class="err" id="errmsg"></div>
+      <button class="btn-login" onclick="doLogin()">Begin Application →</button>
+      <div style="text-align:center;margin-top:14px;color:#555;font-size:11px;">Need the access code? Contact your pastor or church staff.</div>
+    </div>
+    <div class="login-footer">"Every member is a minister." — <span>Overflow Church</span></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="header">
+    <div>
+      <div class="header-title">Dream Team Application</div>
+      <div class="header-sub" id="wname">Overflow Church</div>
+    </div>
+    <button class="btn-signout" onclick="doLogout()">Exit</button>
+  </div>
+
+  <div class="content">
+    <div class="progress-wrap"><div class="progress-bar" id="prog" style="width:20%"></div></div>
+    <div class="progress-label" id="prog-label">Step 1 of 5</div>
+
+    <!-- STEP 1: Personal Info -->
+    <div class="step active" id="step1">
+      <div class="step-banner gold">
+        <div class="step-num">Step 1 of 5</div>
+        <div class="step-title">Personal Information</div>
+        <div class="step-desc">Tell us a little about yourself</div>
+      </div>
+
+      <div class="form-row two">
+        <div class="form-group"><label class="form-label">First Name <span>*</span></label><input class="form-input" id="fname" placeholder="First name"/></div>
+        <div class="form-group"><label class="form-label">Last Name <span>*</span></label><input class="form-input" id="lname" placeholder="Last name"/></div>
+      </div>
+      <div class="form-row two">
+        <div class="form-group"><label class="form-label">Phone Number <span>*</span></label><input class="form-input" id="phone" placeholder="(555) 000-0000" type="tel"/></div>
+        <div class="form-group"><label class="form-label">Email Address <span>*</span></label><input class="form-input" id="email" placeholder="your@email.com" type="email"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Home Address</label><input class="form-input" id="address" placeholder="Street address"/></div>
+      <div class="form-row three">
+        <div class="form-group"><label class="form-label">City</label><input class="form-input" id="city" placeholder="City"/></div>
+        <div class="form-group"><label class="form-label">State</label><input class="form-input" id="state" placeholder="TX"/></div>
+        <div class="form-group"><label class="form-label">Zip Code</label><input class="form-input" id="zip" placeholder="00000"/></div>
+      </div>
+      <div class="form-row two">
+        <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" id="dob" type="date"/></div>
+        <div class="form-group"><label class="form-label">Marital Status</label>
+          <select class="form-select" id="marital">
+            <option value="">Select...</option>
+            <option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Gender</label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="gender" value="Male"> Male</label>
+          <label class="radio-opt"><input type="radio" name="gender" value="Female"> Female</label>
+          <label class="radio-opt"><input type="radio" name="gender" value="Prefer not to say"> Prefer not to say</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Are you a member of Overflow Church? <span>*</span></label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="member" value="Yes"> Yes</label>
+          <label class="radio-opt"><input type="radio" name="member" value="No"> No</label>
+          <label class="radio-opt"><input type="radio" name="member" value="Not Yet"> Not Yet</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Have you been water baptized?</label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="baptized" value="Yes"> Yes</label>
+          <label class="radio-opt"><input type="radio" name="baptized" value="No"> No</label>
+        </div>
+      </div>
+      <div class="nav-arrows"><div></div><button class="btn-next" onclick="goStep(2)">Next →</button></div>
+    </div>
+
+    <!-- STEP 2: Ministry Interest -->
+    <div class="step" id="step2">
+      <div class="step-banner teal">
+        <div class="step-num">Step 2 of 5</div>
+        <div class="step-title">Ministry Interest</div>
+        <div class="step-desc">Select the Dream Team areas that interest you</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Which Dream Team ministry areas interest you? <span>*</span><br><span style="font-weight:normal;text-transform:none;color:#888;font-size:11px">Check all that apply</span></label>
+        <div class="checkbox-grid">
+          <label class="check-opt"><input type="checkbox" name="teams" value="A-Team (Admin)"> A-Team (Admin)</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Baptism Team"> Baptism Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Campus Host Team"> Campus Host Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Campus Support Team"> Campus Support Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Dream Team Host"> Dream Team Host</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Events Team"> Events Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="First Responders"> First Responders</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Greeter Team"> Greeter Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Growth Track Host"> Growth Track Host</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Homeless Ministry"> Homeless Ministry</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="JV Dream Team"> JV Dream Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Kids Check-In"> Kids Check-In</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Next Steps Info"> Next Steps Info</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Nursery / Preschool"> Nursery / Preschool</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Nursing Homes / Outreach"> Nursing Homes / Outreach</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="OFC Legacy Team"> OFC Legacy Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Online Campus"> Online Campus</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Overflow Haven"> Overflow Haven</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Overflow Kids"> Overflow Kids</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Overflow Students"> Overflow Students</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Overflow Worship"> Overflow Worship</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Parking Team"> Parking Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Prayer Team"> Prayer Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Production Team"> Production Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Resource Team"> Resource Team</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Set Up / Take Down"> Set Up / Take Down</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Small Group Leaders"> Small Group Leaders</label>
+          <label class="check-opt"><input type="checkbox" name="teams" value="Usher Team"> Usher Team</label>
+        </div>
+      </div>
+
+      <div class="form-row two">
+        <div class="form-group"><label class="form-label">First Choice Ministry <span>*</span></label><input class="form-input" id="choice1" placeholder="e.g. Overflow Kids"/></div>
+        <div class="form-group"><label class="form-label">Second Choice Ministry</label><input class="form-input" id="choice2" placeholder="e.g. Prayer Team"/></div>
+      </div>
+
+      <div class="nav-arrows">
+        <button class="btn-prev" onclick="goStep(1)">← Previous</button>
+        <button class="btn-next" onclick="goStep(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Background & Experience -->
+    <div class="step" id="step3">
+      <div class="step-banner gold">
+        <div class="step-num">Step 3 of 5</div>
+        <div class="step-title">Background & Experience</div>
+        <div class="step-desc">Help us understand your faith journey and gifts</div>
+      </div>
+
+      <div class="form-group"><label class="form-label">Briefly describe your relationship with Jesus Christ <span>*</span></label><textarea class="form-textarea" id="faith" placeholder="Share a little about your faith journey..."></textarea></div>
+      <div class="form-group"><label class="form-label">Describe any previous ministry or volunteer experience</label><textarea class="form-textarea" id="experience" placeholder="Include church, community, or other volunteer roles..."></textarea></div>
+      <div class="form-row two">
+        <div class="form-group"><label class="form-label">My DISC Personality Style<br><span style="font-weight:normal;text-transform:none;font-size:11px;color:#888">(from Flow & Grow Track)</span></label>
+          <select class="form-select" id="disc">
+            <option value="">Select your style...</option>
+            <option>D — Dominant</option>
+            <option>I — Influential</option>
+            <option>S — Steady</option>
+            <option>C — Compliant</option>
+            <option>Not yet completed</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">My Top Spiritual Gift(s)<br><span style="font-weight:normal;text-transform:none;font-size:11px;color:#888">(from Flow & Grow Track)</span></label><input class="form-input" id="gifts" placeholder="e.g. Teaching, Helps, Leadership"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Why do you want to serve in your chosen ministry area? <span>*</span></label><textarea class="form-textarea" id="why" placeholder="Share your heart for this area of ministry..."></textarea></div>
+
+      <div class="nav-arrows">
+        <button class="btn-prev" onclick="goStep(2)">← Previous</button>
+        <button class="btn-next" onclick="goStep(4)">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Availability -->
+    <div class="step" id="step4">
+      <div class="step-banner teal">
+        <div class="step-num">Step 4 of 5</div>
+        <div class="step-title">Availability & Commitment</div>
+        <div class="step-desc">Let us know when you're available to serve</div>
+      </div>
+
+      <div class="form-group"><label class="form-label">How many Sundays per month can you serve? <span>*</span></label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="sundays" value="1"> 1</label>
+          <label class="radio-opt"><input type="radio" name="sundays" value="2"> 2</label>
+          <label class="radio-opt"><input type="radio" name="sundays" value="3"> 3</label>
+          <label class="radio-opt"><input type="radio" name="sundays" value="4 (All)"> 4 — All Sundays</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Are you available for weekday events?</label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="weekday" value="Yes"> Yes</label>
+          <label class="radio-opt"><input type="radio" name="weekday" value="No"> No</label>
+          <label class="radio-opt"><input type="radio" name="weekday" value="Occasionally"> Occasionally</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Flow & Grow Track status <span>*</span></label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="track" value="Completed"> Completed</label>
+          <label class="radio-opt"><input type="radio" name="track" value="In Progress"> In Progress</label>
+          <label class="radio-opt"><input type="radio" name="track" value="Not Yet"> Not Yet Started</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Have you attended a Dream Team orientation?</label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="orientation" value="Yes"> Yes</label>
+          <label class="radio-opt"><input type="radio" name="orientation" value="No"> No</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Best time to contact you</label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="contact_time" value="Morning"> Morning</label>
+          <label class="radio-opt"><input type="radio" name="contact_time" value="Afternoon"> Afternoon</label>
+          <label class="radio-opt"><input type="radio" name="contact_time" value="Evening"> Evening</label>
+          <label class="radio-opt"><input type="radio" name="contact_time" value="Weekends"> Weekends</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Any questions, special needs, or additional information you'd like us to know?</label><textarea class="form-textarea" id="notes" placeholder="Optional..."></textarea></div>
+
+      <div class="nav-arrows">
+        <button class="btn-prev" onclick="goStep(3)">← Previous</button>
+        <button class="btn-next" onclick="goStep(5)">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Agreement & Submit -->
+    <div class="step" id="step5">
+      <div class="step-banner gold">
+        <div class="step-num">Step 5 of 5</div>
+        <div class="step-title">Agreement & Submission</div>
+        <div class="step-desc">Review and submit your application</div>
+      </div>
+
+      <div class="agree-box">
+        By submitting this application, I confirm that the information provided is accurate and complete.
+        I agree to uphold the <strong>Overflow Church Leadership Honor Code</strong>, serve with excellence
+        and integrity, attend required training, and represent Jesus Christ in all that I do as a
+        Dream Team member. I understand that serving on the Dream Team is a privilege and a calling,
+        and I commit to honoring God through my service.
+      </div>
+
+      <div class="form-group"><label class="form-label">Digital Signature — Type your full name to agree <span>*</span></label><input class="form-input" id="signature" placeholder="Type your full name as your signature"/></div>
+
+      <div style="background:#e8f5e9;border:1px solid #4caf50;border-radius:8px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:#2e7d32;">
+        ✅ Once you submit, Overflow Church leadership will receive your application and reach out to schedule your next steps.
+      </div>
+
+      <button class="btn-submit-app" id="submit-btn" onclick="submitApp()">Submit My Application →</button>
+
+      <div class="nav-arrows">
+        <button class="btn-prev" onclick="goStep(4)">← Previous</button>
+        <div></div>
+      </div>
+    </div>
+
+  </div>
+  <footer><div class="f1">Overflow Church · Houston, Texas</div><div class="f2">Dream Team Application</div></footer>
+</div>
+
+<!-- SUCCESS -->
+<div id="success" style="display:none;min-height:100vh;background:var(--black);display:none;align-items:center;justify-content:center;padding:20px;">
+  <div class="success-card">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Application Submitted!</div>
+    <div class="success-msg">Thank you for your heart to serve at Overflow Church! Our Dream Team leadership will review your application and be in touch soon to discuss your next steps.<br><br>We are believing God for great things through you!</div>
+    <div class="success-verse">"For we are God's handiwork, created in Christ Jesus to do good works, which God prepared in advance for us to do." — Ephesians 2:10</div>
+  </div>
+</div>
+
+<script>
+var ACCESS = "OfcApp";
+var FORMSPREE = "maqpodwe";
+var USER = "";
+var currentStep = 1;
+
+function doLogin(){
+  var n = document.getElementById('iname').value.trim();
+  var c = document.getElementById('icode').value.trim();
+  var e = document.getElementById('errmsg');
+  e.style.display = 'none';
+  if(!n){e.textContent='Please enter your full name.';e.style.display='block';return;}
+  if(c !== ACCESS){e.textContent='Access code is incorrect. Please check with your pastor or church staff.';e.style.display='block';return;}
+  USER = n;
+  document.getElementById('wname').textContent = 'Welcome, ' + n + '!';
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+function doLogout(){
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('iname').value = '';
+  document.getElementById('icode').value = '';
+}
+
+function goStep(n){
+  document.getElementById('step' + currentStep).classList.remove('active');
+  document.getElementById('step' + n).classList.add('active');
+  currentStep = n;
+  var pct = (n / 5) * 100;
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = 'Step ' + n + ' of 5';
+  window.scrollTo(0, 0);
+}
+
+function getRadio(name){
+  var r = document.querySelector('input[name="'+name+'"]:checked');
+  return r ? r.value : '';
+}
+
+function getCheckboxes(name){
+  var checked = document.querySelectorAll('input[name="'+name+'"]:checked');
+  var vals = [];
+  checked.forEach(function(c){ vals.push(c.value); });
+  return vals.join(', ');
+}
+
+function submitApp(){
+  var sig = document.getElementById('signature').value.trim();
+  if(!sig){alert('Please type your full name as your digital signature to submit.');return;}
+  if(!document.getElementById('fname').value.trim()){alert('Please go back and enter your first name.');return;}
+
+  var btn = document.getElementById('submit-btn');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+
+  var data = {
+    _subject: 'Dream Team Application — ' + USER,
+    applicant_name: USER,
+    first_name: document.getElementById('fname').value,
+    last_name: document.getElementById('lname').value,
+    phone: document.getElementById('phone').value,
+    email: document.getElementById('email').value,
+    address: document.getElementById('address').value,
+    city: document.getElementById('city').value,
+    state: document.getElementById('state').value,
+    zip: document.getElementById('zip').value,
+    date_of_birth: document.getElementById('dob').value,
+    gender: getRadio('gender'),
+    marital_status: document.getElementById('marital').value,
+    ofc_member: getRadio('member'),
+    baptized: getRadio('baptized'),
+    ministry_interests: getCheckboxes('teams'),
+    first_choice: document.getElementById('choice1').value,
+    second_choice: document.getElementById('choice2').value,
+    faith_description: document.getElementById('faith').value,
+    ministry_experience: document.getElementById('experience').value,
+    disc_style: document.getElementById('disc').value,
+    spiritual_gifts: document.getElementById('gifts').value,
+    reason_for_serving: document.getElementById('why').value,
+    sundays_available: getRadio('sundays'),
+    weekday_availability: getRadio('weekday'),
+    flow_grow_track: getRadio('track'),
+    orientation_attended: getRadio('orientation'),
+    best_contact_time: getRadio('contact_time'),
+    additional_notes: document.getElementById('notes').value,
+    digital_signature: sig
+  };
+
+  fetch('https://formspree.io/f/' + FORMSPREE, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Accept':'application/json'},
+    body: JSON.stringify(data)
+  }).then(function(r){
+    if(r.ok){
+      document.getElementById('app').style.display = 'none';
+      var s = document.getElementById('success');
+      s.style.display = 'flex';
+    } else {
+      btn.textContent = 'Submission Failed — Try Again';
+      btn.disabled = false;
+      btn.style.background = '#c0392b';
+    }
+  }).catch(function(){
+    btn.textContent = 'Submission Failed — Try Again';
+    btn.disabled = false;
+    btn.style.background = '#c0392b';
+  });
+}
+</script>
+</body>
+</html>
